@@ -2,9 +2,9 @@
 
 ---
 
-**Nama Kelompok:** ``
+**Nama Kelompok:** `Jelajah Indonesia`
 
-**Nama Proyek / Aplikasi:** ``
+**Nama Proyek / Aplikasi:** `Jelajah Indonesia`
 
 **Jumlah Anggota:** `2` orang
 
@@ -48,16 +48,16 @@
 
 ## Stack Teknologi
 
-**Frontend:** `...`
+**Frontend:** `Tailwind CSS`
 *(Bebas, contoh: React, Vue, Next.js, Nuxt, Svelte)*
 
 **Backend:** `Laravel` *(wajib)*
 *(Versi dan pilihan database driver menyesuaikan kebutuhan kelompok)*
 
-**Database:** `...`
+**Database:** `MySQL`
 *(Contoh: MySQL, PostgreSQL, SQLite)*
 
-**DevOps / Infrastruktur:** `...`
+**DevOps / Infrastruktur:** `GitHub`
 *(Contoh: Docker, GitHub Actions, Nginx, Railway, VPS)*
 
 ---
@@ -67,9 +67,9 @@
 *(Jelaskan secara singkat bagaimana aplikasi-aplikasi dalam proyek ini saling terhubung)*
 
 **Aplikasi 1 — Frontend**
-- Nama Aplikasi: `...`
-- Deskripsi Singkat: `...`
-- Berkomunikasi dengan: `...`
+- Nama Aplikasi: `Jelajah Indonesia - Frontend`
+- Deskripsi Singkat: `Tampilan antarmuka pengguna berbasis Tailwind CSS untuk menampilkan informasi wisata, konverter mata uang, dan manajemen favorit`
+- Berkomunikasi dengan: `Backend Laravel melalui web routes`
 
 **Aplikasi 2 — Frontend** *(khusus kelompok 5 orang)*
 - Nama Aplikasi: `...`
@@ -77,9 +77,9 @@
 - Berkomunikasi dengan: `...`
 
 **Aplikasi 3 — Backend (Laravel)**
-- Nama Aplikasi / Service: `...`
-- Deskripsi Singkat: `...`
-- Menyediakan layanan untuk: `...`
+- Nama Aplikasi / Service: `Jelajah Indonesia - Backend API`
+- Deskripsi Singkat: `Mengelola autentikasi pengguna, mengambil data dari OpenTripMap API dan ExchangeRate-API, serta menyimpan data favorit dan history ke database MySQL`
+- Menyediakan layanan untuk: `Frontend Tailwind CSS`
 
 **Aplikasi 4 — Backend (Laravel)** *(khusus kelompok 5 orang)*
 - Nama Aplikasi / Service: `...`

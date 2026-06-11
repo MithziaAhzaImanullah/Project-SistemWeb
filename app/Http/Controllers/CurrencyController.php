@@ -18,7 +18,7 @@ class CurrencyController extends Controller
         $amount = $request->query('amount');
         $apiKey = env('EXCHANGERATE_API_KEY');
 
-        $response = Http::get("https://v6.exchangerate-api.com/v6/{$apiKey}/pair/{$from}/IDR/{$amount}");
+        $response = Http::withoutVerifying()->get("https://v6.exchangerate-api.com/v6/{$apiKey}/pair/{$from}/IDR/{$amount}");
 
         if ($response->failed() || $response['result'] === 'error') {
             return response()->json([

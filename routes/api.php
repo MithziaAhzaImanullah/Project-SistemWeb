@@ -5,6 +5,15 @@ use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\SearchHistoryController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\ApiAuthController;
+
+// Auth API routes
+Route::post('/v1/auth/register', [ApiAuthController::class, 'register']);
+Route::post('/v1/auth/login', [ApiAuthController::class, 'login']);
+Route::post('/v1/auth/logout', [ApiAuthController::class, 'logout'])
+    ->middleware('auth:sanctum');
 
 // Public routes (tidak perlu login)
 Route::get('/v1/destinations', [DestinationController::class, 'search']);

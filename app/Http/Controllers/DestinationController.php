@@ -19,7 +19,7 @@ class DestinationController extends Controller
         $apiKey = env('OPENTRIPMAP_API_KEY');
 
         // Ambil koordinat kota
-        $geoResponse = Http::get("https://api.opentripmap.com/0.1/en/places/geoname", [
+        $geoResponse = Http::withoutVerifying()->get("https://api.opentripmap.com/0.1/en/places/geoname", [
             'name' => $city,
             'country' => 'ID',
             'apikey' => $apiKey,
@@ -44,7 +44,7 @@ class DestinationController extends Controller
         }
 
         // Ambil daftar wisata
-        $placesResponse = Http::get("https://api.opentripmap.com/0.1/en/places/radius", [
+        $placesResponse = Http::withoutVerifying()->get("https://api.opentripmap.com/0.1/en/places/radius", [
             'radius' => 10000,
             'lon' => $lon,
             'lat' => $lat,

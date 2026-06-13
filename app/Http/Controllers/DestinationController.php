@@ -3,11 +3,24 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use App\Models\SearchHistory;
+use App\Contracts\TourismServiceInterface;
+use App\Contracts\SearchHistoryRepositoryInterface;
+use Exception;
 
 class DestinationController extends Controller
 {
+    protected TourismServiceInterface $tourismService;
+    protected SearchHistoryRepositoryInterface $historyRepository;
+
+    // Inject kedua interface yang dibutuhkan lewat constructor
+    public function __construct(
+        TourismServiceInterface $tourismService,
+        SearchHistoryRepositoryInterface $historyRepository
+    ) {
+        $this->tourismService = $tourismService;
+        $this->historyRepository = $historyRepository;
+    }
+
     public function search(Request $request)
     {
         $request->validate([
@@ -15,68 +28,48 @@ class DestinationController extends Controller
         ]);
 
         $city = $request->query('city');
-        $limit = $request->query('limit', 10);
-        $apiKey = env('OPENTRIPMAP_API_KEY');
+        $limit = (int) $request->query('limit', 10);
 
-        // Ambil koordinat kota
-        $geoResponse = Http::withoutVerifying()->get("https://api.opentripmap.com/0.1/en/places/geoname", [
-            'name' => $city,
-            'country' => 'ID',
-            'apikey' => $apiKey,
-        ]);
+        try {
+            // 1. Ambil data destinasi dari service OpenTripMap
+            $destinations = $this->tourismService->searchByLocation($city, ['limit' => $limit]);
 
-        if ($geoResponse->failed() || !isset($geoResponse['lat'])) {
+            // 2. Simpan history pencarian via Repository secara internal jika user sudah terautentikasi
+            if (auth()->check()) {
+                $this->historyRepository->saveHistory(auth()->id(), $city);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $destinations,
+            ]);
+
+        } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'City not found or API key invalid',
+                'message' => $e->getMessage() === 'City not found or OpenTripMap API error' 
+                    ? 'City not found or API key invalid' 
+                    : $e->getMessage(),
             ], 404);
         }
-
-        $lat = $geoResponse['lat'];
-        $lon = $geoResponse['lon'];
-
-        // Simpan history pencarian kalau user login
-        if (auth()->check()) {
-            SearchHistory::create([
-                'user_id' => auth()->id(),
-                'keyword' => $city,
-            ]);
-        }
-
-        // Ambil daftar wisata
-        $placesResponse = Http::withoutVerifying()->get("https://api.opentripmap.com/0.1/en/places/radius", [
-            'radius' => 10000,
-            'lon' => $lon,
-            'lat' => $lat,
-            'kinds' => 'interesting_places',
-            'limit' => $limit,
-            'apikey' => $apiKey,
-        ]);
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $placesResponse['features'] ?? [],
-        ]);
     }
 
     public function detail($xid)
     {
-        $apiKey = env('OPENTRIPMAP_API_KEY');
+        try {
+            // Ambil detail tempat wisata berdasarkan XID
+            $detail = $this->tourismService->getPlaceDetail($xid);
 
-        $response = Http::get("https://api.opentripmap.com/0.1/en/places/xid/{$xid}", [
-            'apikey' => $apiKey,
-        ]);
+            return response()->json([
+                'status' => 'success',
+                'data' => $detail,
+            ]);
 
-        if ($response->failed()) {
+        } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Destination not found',
+                'message' => $e->getMessage(),
             ], 404);
         }
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $response->json(),
-        ]);
     }
 }

@@ -350,7 +350,7 @@ Content-Type: application/json
 
 **URL:** `/api/v1/auth/register`
 
-**Deskripsi:** Mendaftarkan akun pengguna baru ke sistem.
+**Deskripsi:** Mendaftarkan akun pengguna baru ke sistem dan mengembalikan token akses Sanctum.
 
 **Autentikasi Diperlukan:** `Tidak`
 
@@ -376,13 +376,17 @@ Content-Type: application/json
   "status": "success",
   "message": "Akun berhasil dibuat",
   "data": {
-    "id": 1,
-    "name": "Imam Syuja",
-    "email": "imam@example.com"
+    "token": "1|FDReFX3Vorl8YCzdsFZZfL68eKl2th8je7Z5PzH78f1b9527",
+    "user": {
+      "id": 1,
+      "name": "Imam Syuja",
+      "email": "imam@example.com",
+      "created_at": "2026-06-11T16:04:55.000000Z",
+      "updated_at": "2026-06-11T16:04:55.000000Z"
+    }
   }
 }
 ```
-
 **Response Gagal:**
 ```json
 {
@@ -399,7 +403,7 @@ Content-Type: application/json
 
 **URL:** `/api/v1/auth/login`
 
-**Deskripsi:** Autentikasi pengguna dan mengembalikan token akses untuk digunakan pada endpoint yang memerlukan autentikasi.
+**Deskripsi:** Autentikasi pengguna dan mengembalikan token akses Sanctum untuk digunakan pada endpoint yang memerlukan autentikasi.
 
 **Autentikasi Diperlukan:** `Tidak`
 
@@ -422,11 +426,13 @@ Content-Type: application/json
 {
   "status": "success",
   "data": {
-    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+    "token": "2|zvyblMB8Xz9kc6lkjWUMBRv3OYdiAR3Rwyat4ebJd6d4a955",
     "user": {
       "id": 1,
       "name": "Imam Syuja",
-      "email": "imam@example.com"
+      "email": "imam@example.com",
+      "created_at": "2026-06-11T16:04:55.000000Z",
+      "updated_at": "2026-06-11T16:04:55.000000Z"
     }
   }
 }

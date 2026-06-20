@@ -24,9 +24,9 @@
                     <div class="h-5 w-[1px] bg-slate-200"></div>
                     <div class="flex items-center space-x-2">
                         <div class="w-8 h-8 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-md shadow-emerald-200">
-                            M
+                            {{ substr(Auth::user()->name, 0, 1) }}
                         </div>
-                        <span class="text-sm font-bold text-slate-700">Mithzia Ahza</span>
+                        <span class="text-sm font-bold text-slate-700">{{ Auth::user()->name }}</span>
                     </div>
                 </div>
             </div>

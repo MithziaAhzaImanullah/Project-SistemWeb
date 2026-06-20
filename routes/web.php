@@ -46,5 +46,13 @@ Route::get('/login-desain', function () {
     return view('auth.login'); 
 });
 
+Route::get('/welcome-desain', function () {
+    return view('welcome');
+});
+
+Route::get('/dashboard-desain', function () {
+    return view('dashboard');
+});
+
 // Memuat route otentikasi bawaan dari Laravel Breeze (login, register, dll)
 require __DIR__.'/auth.php';

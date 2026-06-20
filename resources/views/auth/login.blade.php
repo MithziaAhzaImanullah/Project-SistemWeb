@@ -30,9 +30,9 @@
     <div class="mt-8 sm:mx-auto w-full max-w-md z-10">
         <div class="bg-white py-8 px-4 shadow-xl border border-slate-100 rounded-3xl sm:px-10">
             
-            <form class="space-y-6" action="#" method="POST">
-                <input type="hidden" name="_token" value="dummy_token_breeze">
-
+            <form class="space-y-6" action="{{ route('login') }}" method="POST">
+                @csrf
+                
                 <div>
                     <label for="email" class="block text-sm font-bold text-slate-700 mb-2">
                         Alamat Email
@@ -68,7 +68,7 @@
                 </div>
 
                 <div>
-                    <button type="button" class="w-full flex justify-center bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold py-3.5 px-4 rounded-xl transition shadow-lg shadow-emerald-600/20 text-sm">
+                    <button type="submit" class="w-full flex justify-center bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold py-3.5 px-4 rounded-xl transition shadow-lg shadow-emerald-600/20 text-sm">
                         Masuk ke Akun
                     </button>
                 </div>
@@ -77,7 +77,7 @@
             <div class="mt-6 pt-6 border-t border-slate-100 text-center">
                 <p class="text-sm text-slate-500">
                     Belum punya akun? 
-                    <a href="#" class="font-bold text-emerald-600 hover:text-emerald-700 transition">
+                    <a href="{{ route('register') }}" class="font-bold text-emerald-600 hover:text-emerald-700 transition">
                         Daftar Akun Baru
                     </a>
                 </p>

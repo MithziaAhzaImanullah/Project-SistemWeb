@@ -133,24 +133,6 @@
                         📍 Buka di Google Maps
                     </a>
 
-                    <h3 class="font-bold text-lg">
-                        📍 Lokasi Wisata
-                    </h3>
-                    <p class="text-sm text-gray-500">
-                        Koordinat lokasi destinasi berdasarkan data OpenTripMap.
-                    </p>
-
-                    <div class="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-100 text-center text-xs text-slate-500">
-                        <div>
-                            <span class="block text-[10px] uppercase font-bold tracking-wider text-slate-400">Latitude</span>
-                            <span class="font-mono text-slate-700 font-medium">{{ $wisata['lat'] ?? '-' }}</span>
-                        </div>
-                        <div class="border-l border-slate-200">
-                            <span class="block text-[10px] uppercase font-bold tracking-wider text-slate-400">Longitude</span>
-                            <span class="font-mono text-slate-700 font-medium">{{ $wisata['lon'] ?? '-' }}</span>
-                        </div>
-                    </div>
-
                     {{-- ✅ FIX 3: Tombol Simpan ke Favorit --}}
                     @auth
                         <form action="{{ route('favorite.store') }}" method="POST">

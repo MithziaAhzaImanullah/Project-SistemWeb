@@ -83,7 +83,7 @@ class WisataController extends Controller
             'xid'         => $data['xid'] ?? '',
             'name'        => $data['name'] ?? 'Nama Tidak Tersedia',
             'image'       => $data['preview']['source'] ?? null, // Mengambil gambar asli dari objek API
-            'kinds'       => $data['kinds'] ?? 'Destinasi Wisata',
+            'kinds'       => ucfirst(str_replace('_',' ', explode(',', $data['kinds'] ?? 'Wisata')[0])),    
             'address'     => $data['address']['road'] ?? ($data['address']['city'] ?? 'Lokasi tidak spesifik'),
             'city'        => $data['address']['city'] ?? ($data['address']['county'] ?? ''),
             'province'    => $data['address']['state'] ?? '',

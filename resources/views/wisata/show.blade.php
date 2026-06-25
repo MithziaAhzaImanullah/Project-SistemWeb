@@ -6,13 +6,17 @@
     <title>Detail Destinasi - Jelajah Indonesia</title>
     <link
         rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        .leaflet-container {
+            z-index: 1 !important;
+        }
+    </style>    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased">
 
-    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm">
+    <nav class="sticky top-0 z-[9999] bg-white border-b shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20 items-center">
                 <div class="flex items-center space-x-2">
@@ -24,8 +28,12 @@
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="/wisata-desain" class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition">Beranda</a>
                     <a href="/currency-desain" class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition">Konverter Kurs</a>
-                    <a href="/dashboard" class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition">Favorit Saya</a>
                     <div class="h-5 w-[1px] bg-slate-200"></div>
+                    @auth
+                    <a href="{{ route('dashboard') }}">
+                        Dashboard
+                    </a>
+                    @endauth
                     @auth
                         <div class="flex items-center space-x-3">
                             <div class="w-8 h-8 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-md">
@@ -77,11 +85,7 @@
                         class="w-full h-full object-cover">
                     <div class="absolute top-4 left-4">
                         <span class="bg-emerald-600 text-white px-3 py-1 rounded-xl text-xs font-bold tracking-wide shadow-md">
-                            'kinds' => ucfirst(
-                                str_replace('_', ' ',
-                                    explode(',', $data['kinds'])[0] ?? 'Wisata'
-                                )
-                            ),
+                            {{ $wisata['kinds'] }}
                         </span>
                     </div>
                 </div>
@@ -100,29 +104,6 @@
                             {{ $wisata['province'] ?? '-' }}
                         </p>
                     </div>
-
-                    {{-- FORM FAVORIT DENGAN INPUT MANUAL YANG VALID --}}
-                    @auth
-                        <form action="{{ route('favorite.store') }}" method="POST" class="shrink-0">
-                            @csrf
-                            <input type="hidden" name="xid" value="{{ $wisata['xid'] ?? '' }}">
-                            <input type="hidden" name="name" value="{{ $wisata['name'] ?? '' }}">
-                            <input type="hidden" name="image" value="{{ $wisata['image'] ?? 'https://via.placeholder.com/500x300?text=No+Image' }}">
-                            <input type="hidden" name="city" value="{{ $wisata['city'] ?? '' }}">
-                            <input type="hidden" name="province" value="{{ $wisata['province'] ?? '' }}">
-
-                            <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold px-5 py-3 rounded-xl border border-rose-200/60 transition shadow-sm">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 fill-rose-600" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
-                                </svg>
-                                Simpan ke Favorit
-                            </button>
-                        </form>
-                    @else
-                        <a href="/login" class="text-center bg-slate-100 text-slate-600 font-bold px-5 py-3 rounded-xl text-xs transition">
-                            Login untuk Menyimpan Favorit
-                        </a>
-                    @endauth
                 </div>
 
                 <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 space-y-4">
@@ -142,19 +123,16 @@
                         Peta Lokasi Interaktif
                     </h2>
                     
-                    <div
-                        id="map"
-                        class="w-full h-64 rounded-2xl border border-slate-200">
+                    <div id="map"
+                        class="relative z-0 w-full h-64 rounded-2xl border border-slate-200">
                     </div>
-                        <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#059669_1px,transparent_1px)] [background-size:16px_16px]"></div>
-                        
-                        <div class="z-10 bg-emerald-600 text-white p-3 rounded-full shadow-lg shadow-emerald-600/30 mb-2 animate-bounce">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            </svg>
-                        </div>
-                        <span class="z-10 font-semibold text-slate-700 text-sm">Peta Siap Dimuat</span>
-                        <p class="z-10 text-xs text-slate-400 mt-1 max-w-[200px]">Backend akan menyuntikkan koordinat dari OpenTripMap API ke Leaflet JS disini.</p>
+
+                        <h3 class="font-bold text-lg">
+                        📍 Lokasi Wisata
+                        </h3>
+                        <p class="text-sm text-gray-500">
+                        Koordinat lokasi destinasi berdasarkan data OpenTripMap.
+                        </p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-100 text-center text-xs text-slate-500">
@@ -169,6 +147,14 @@
                     </div>
                 </div>
 
+                <a
+                    href="https://www.google.com/maps?q={{ $wisata['lat'] }},{{ $wisata['lon'] }}"
+                    target="_blank"
+                    class="block mt-4 text-center bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl transition shadow-md"
+                >
+                    📍 Buka di Google Maps
+                </a>
+                
                 <div class="bg-gradient-to-br from-slate-900 to-emerald-950 rounded-3xl p-6 shadow-md border border-slate-800 space-y-4">
                     <h3 class="font-bold text-emerald-400 uppercase tracking-wider text-[11px]">💡 Tips Perjalanan</h3>
                     <h2 class="text-xl font-extrabold tracking-tight leading-snug text-white">Datang dari Luar Negeri?</h2>

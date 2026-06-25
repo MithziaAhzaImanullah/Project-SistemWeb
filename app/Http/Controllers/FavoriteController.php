@@ -9,12 +9,11 @@ class FavoriteController extends Controller
 {
     public function index()
     {
+        // 1. Ambil semua data favorit milik user yang sedang login dari database SQLite
         $favorites = Favorite::where('user_id', auth()->id())->get();
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $favorites,
-        ]);
+        // 2. Return ke view dashboard.blade.php sambil membawa variabel $favorites
+        return view('dashboard', compact('favorites'));
     }
 
     public function store(Request $request)
@@ -33,10 +32,7 @@ class FavoriteController extends Controller
             ->exists();
 
         if ($exists) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Destination already in favorites',
-            ], 400);
+            return redirect('/dashboard')->with('error', 'Destinasi sudah ada di daftar favorit kamu!');
         }
 
         $favorite = Favorite::create([
@@ -48,31 +44,26 @@ class FavoriteController extends Controller
             'province' => $request->province,
         ]);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Destinasi berhasil disimpan ke favorit',
-            'data' => $favorite,
-        ], 201);
+        // KEMBALI KE DASHBOARD dengan membawa session success agar data langsung muncul
+        return redirect('/dashboard')->with('success', 'Destinasi berhasil disimpan ke favorit!');
     }
 
     public function destroy($id)
     {
+        // Cari data favorit milik user yang sedang login
         $favorite = Favorite::where('user_id', auth()->id())
             ->where('id', $id)
             ->first();
 
+        // Jika data tidak ditemukan, redirect balik dengan pesan error
         if (!$favorite) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Favorite not found or unauthorized',
-            ], 404);
+            return redirect()->back()->with('error', 'Destinasi tidak ditemukan atau tidak sah.');
         }
 
+        // Proses hapus data
         $favorite->delete();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Destinasi berhasil dihapus dari favorit',
-        ]);
+        // KEMBALI KE DASHBOARD dengan membawa session success
+        return redirect()->back()->with('success', 'Destinasi berhasil dihapus dari favorit');
     }
 }

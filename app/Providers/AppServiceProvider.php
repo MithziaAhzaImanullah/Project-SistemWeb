@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\ServiceProvider;
 use App\Services\ExchangeRateService;
 use App\Contracts\CurrencyConverterInterface;
@@ -22,8 +21,6 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        \Illuminate\Support\Facades\Http::globalOptions([
-            'verify' => false,
-        ]);
+        \Illuminate\Support\Facades\Http::withoutVerifying();
     }
 }

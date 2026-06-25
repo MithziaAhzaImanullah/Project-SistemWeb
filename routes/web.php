@@ -2,57 +2,36 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\WisataController;
 
-// Halaman utama default Laravel
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/wisata-desain');
 });
 
-// Dashboard pengguna setelah login (Bawaan Breeze)
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-// Manajemen Profil Pengguna (Bawaan Breeze)
+// Grup middleware auth untuk mengamankan halaman profile dan dashboard pengguna
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // Halaman Utama Dashboard (Kelola Destinasi Favorit Saya)
+    Route::get('/dashboard', [FavoriteController::class, 'index'])->name('dashboard');
+    
+    // Aksi untuk menyimpan destinasi favorit baru ke database SQLite
+    Route::post('/dashboard/favorite', [FavoriteController::class, 'store'])->name('favorite.store');
+    
+    // Aksi untuk menghapus destinasi favorit dari database SQLite
+    Route::delete('/dashboard/favorite/{id}', [FavoriteController::class, 'destroy'])->name('favorite.destroy');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Route Uji Coba Desain Frontend (Jelajah Indonesia)
-|--------------------------------------------------------------------------
-*/
+// Rute Tampilan Fitur Wisata Dinamis (Dikelola oleh WisataController)
+Route::get('/wisata-desain', [WisataController::class, 'index'])->name('wisata.index');
+Route::get('/wisata-detail-desain', [WisataController::class, 'show'])->name('wisata.show');
 
-// 1. Halaman Pencarian Wisata
-Route::get('/wisata-desain', function () {
-    return view('wisata.index');
-});
-
-// 2. Halaman Detail Wisata
-Route::get('/wisata-detail-desain', function () {
-    return view('wisata.show');
-});
-
-// 3. Halaman Konverter Mata Uang
+// Rute Fitur Konverter Kurs
 Route::get('/currency-desain', function () {
     return view('currency.index');
-});
+})->name('currency.index');
 
-// 4. Halaman Login (Sudah diperbaiki & tidak duplikat)
-Route::get('/login-desain', function () {
-    return view('auth.login'); 
-});
-
-Route::get('/welcome-desain', function () {
-    return view('welcome');
-});
-
-Route::get('/dashboard-desain', function () {
-    return view('dashboard');
-});
-
-// Memuat route otentikasi bawaan dari Laravel Breeze (login, register, dll)
 require __DIR__.'/auth.php';

@@ -20,12 +20,21 @@
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="/wisata-desain" class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition">Beranda</a>
                     <a href="/currency-desain" class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition">Konverter Kurs</a>
-                    <a href="#" class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition">Favorit Saya</a>
+                    <a href="/dashboard" class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition">Favorit Saya</a>
                     <div class="h-5 w-[1px] bg-slate-200"></div>
-                    <button class="text-sm font-medium text-slate-700 hover:text-emerald-600 transition mr-2">Masuk</button>
-                    <button class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-md shadow-emerald-100 transition">
-                        Daftar Akun
-                    </button>
+                    @auth
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-md">
+                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                            </div>
+                            <span class="text-sm font-bold text-slate-700">{{ Auth::user()->name }}</span>
+                        </div>
+                    @else
+                        <a href="/login" class="text-sm font-medium text-slate-700 hover:text-emerald-600 transition mr-2">Masuk</a>
+                        <a href="/register" class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-md transition">
+                            Daftar Akun
+                        </a>
+                    @endauth
                 </div>
             </div>
         </div>
@@ -33,6 +42,18 @@
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         
+        {{-- Alert Notifikasi Sukses/Error --}}
+        @if(session('success'))
+            <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-2xl flex items-center">
+                ✨ {{ session('success') }}
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="mb-6 p-4 bg-rose-50 border border-rose-200 text-rose-700 text-sm rounded-2xl flex items-center">
+                ⚠️ {{ session('error') }}
+            </div>
+        @endif
+
         <div class="mb-6">
             <a href="/wisata-desain" class="inline-flex items-center text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition gap-1 group">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -63,14 +84,28 @@
                         </p>
                     </div>
 
-                    <form action="#" method="POST" class="shrink-0">
-                        <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold px-5 py-3 rounded-xl border border-rose-200/60 transition shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 fill-rose-600" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
-                            </svg>
-                            Simpan ke Favorit
-                        </button>
-                    </form>
+                    {{-- FORM FAVORIT DENGAN INPUT MANUAL YANG VALID --}}
+                    @auth
+                        <form action="{{ route('favorite.store') }}" method="POST" class="shrink-0">
+                            @csrf
+                            <input type="hidden" name="xid" value="borobudur_12345">
+                            <input type="hidden" name="name" value="Candi Borobudur">
+                            <input type="hidden" name="image" value="https://images.unsplash.com/photo-1596402184320-417e7178b2cd?auto=format&fit=crop&w=500&q=80">
+                            <input type="hidden" name="city" value="Magelang">
+                            <input type="hidden" name="province" value="Jawa Tengah">
+
+                            <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold px-5 py-3 rounded-xl border border-rose-200/60 transition shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 fill-rose-600" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                                </svg>
+                                Simpan ke Favorit
+                            </button>
+                        </form>
+                    @else
+                        <a href="/login" class="text-center bg-slate-100 text-slate-600 font-bold px-5 py-3 rounded-xl text-xs transition">
+                            Login untuk Menyimpan Favorit
+                        </a>
+                    @endauth
                 </div>
 
                 <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 space-y-4">

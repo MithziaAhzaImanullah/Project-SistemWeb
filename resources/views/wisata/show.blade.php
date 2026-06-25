@@ -4,14 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Destinasi - Jelajah Indonesia</title>
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        .leaflet-container {
-            z-index: 1 !important;
-        }
-    </style>    
+        .leaflet-container { z-index: 1 !important; }
+    </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased">
@@ -30,11 +26,7 @@
                     <a href="/currency-desain" class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition">Konverter Kurs</a>
                     <div class="h-5 w-[1px] bg-slate-200"></div>
                     @auth
-                    <a href="{{ route('dashboard') }}">
-                        Dashboard
-                    </a>
-                    @endauth
-                    @auth
+                        <a href="{{ route('dashboard') }}" class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition">Dashboard</a>
                         <div class="flex items-center space-x-3">
                             <div class="w-8 h-8 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-md">
                                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
@@ -53,8 +45,7 @@
     </nav>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        
-        {{-- Alert Notifikasi Sukses/Error --}}
+
         @if(session('success'))
             <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-2xl flex items-center">
                 ✨ {{ session('success') }}
@@ -76,10 +67,10 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-            
+
+            {{-- Kolom Kiri: Gambar, Judul, Deskripsi --}}
             <div class="lg:col-span-2 space-y-6">
 
-                {{-- ✅ FIX 1: Badge kinds DIHAPUS dari sini --}}
                 <div class="relative rounded-3xl overflow-hidden shadow-lg border border-slate-100 aspect-[16/9] bg-slate-200">
                     <img
                         src="{{ $wisata['image'] ?? 'https://via.placeholder.com/1200x700?text=No+Image' }}"
@@ -87,20 +78,16 @@
                         class="w-full h-full object-cover">
                 </div>
 
-                <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                        <h1 class="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
-                            {{ $wisata['name'] ?? 'Destinasi Wisata' }}
-                        </h1>
-                        <p class="text-slate-500 mt-2 flex items-center text-sm sm:text-base">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            </svg>
-                            {{ $wisata['address'] ?? '-' }},
-                            {{ $wisata['city'] ?? '-' }},
-                            {{ $wisata['province'] ?? '-' }}
-                        </p>
-                    </div>
+                <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100">
+                    <h1 class="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
+                        {{ $wisata['name'] ?? 'Destinasi Wisata' }}
+                    </h1>
+                    <p class="text-slate-500 mt-2 flex items-center text-sm sm:text-base">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500 mr-1.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        </svg>
+                        {{ $wisata['address'] ?? '-' }}, {{ $wisata['city'] ?? '-' }}, {{ $wisata['province'] ?? '-' }}
+                    </p>
                 </div>
 
                 <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 space-y-4">
@@ -111,29 +98,28 @@
                 </div>
             </div>
 
+            {{-- Kolom Kanan: Peta + Tombol --}}
             <div class="space-y-6">
                 <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 space-y-4">
+
                     <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0022 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                         </svg>
                         Peta Lokasi Interaktif
                     </h2>
-                    
-                    <div id="map"
-                        class="relative z-0 w-full h-64 rounded-2xl border border-slate-200">
-                    </div>
 
-                    {{-- ✅ FIX 2: Tombol Google Maps dipindah ke sini, tepat di bawah peta --}}
-                    
-                        href="https://www.google.com/maps?q={{ $wisata['lat'] }},{{ $wisata['lon'] }}"
-                        target="_blank"
-                        class="block text-center bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl transition shadow-md"
-                    >
+                    {{-- Peta Leaflet --}}
+                    <div id="map" class="relative z-0 w-full h-64 rounded-2xl border border-slate-200"></div>
+
+                    {{-- Tombol Google Maps tepat di bawah peta --}}
+                    <a href="https://www.google.com/maps?q={{ $wisata['lat'] }},{{ $wisata['lon'] }}"
+                       target="_blank"
+                       class="block text-center bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl transition shadow-md">
                         📍 Buka di Google Maps
                     </a>
 
-                    {{-- ✅ FIX 3: Tombol Simpan ke Favorit --}}
+                    {{-- Tombol Favorit --}}
                     @auth
                         <form action="{{ route('favorite.store') }}" method="POST">
                             @csrf
@@ -143,18 +129,20 @@
                             <input type="hidden" name="city"     value="{{ $wisata['city'] }}">
                             <input type="hidden" name="province" value="{{ $wisata['province'] }}">
                             <button type="submit"
-                                class="w-full block text-center bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3 rounded-xl transition shadow-md">
+                                class="w-full text-center bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3 rounded-xl transition shadow-md">
                                 ❤️ Simpan ke Favorit
                             </button>
                         </form>
                     @else
                         <a href="/login"
-                            class="block text-center bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold py-3 rounded-xl transition text-sm">
+                           class="block text-center bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold py-3 rounded-xl transition text-sm">
                             🔒 Masuk untuk menyimpan favorit
                         </a>
                     @endauth
+
                 </div>
 
+                {{-- Card Tips Perjalanan --}}
                 <div class="bg-gradient-to-br from-slate-900 to-emerald-950 rounded-3xl p-6 shadow-md border border-slate-800 space-y-4">
                     <h3 class="font-bold text-emerald-400 uppercase tracking-wider text-[11px]">💡 Tips Perjalanan</h3>
                     <h2 class="text-xl font-extrabold tracking-tight leading-snug text-white">Datang dari Luar Negeri?</h2>
@@ -165,33 +153,28 @@
                         Buka Konverter Kurs ➡️
                     </a>
                 </div>
-            </div>
 
+            </div>
         </div>
     </main>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const lat = {{ $wisata['lat'] ?? 0 }};
-        const lon = {{ $wisata['lon'] ?? 0 }};
+        document.addEventListener("DOMContentLoaded", function () {
+            const lat = {{ $wisata['lat'] ?? 0 }};
+            const lon = {{ $wisata['lon'] ?? 0 }};
 
-        const map = L.map('map').setView([lat, lon], 13);
+            const map = L.map('map').setView([lat, lon], 13);
 
-        L.tileLayer(
-            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            {
-                attribution:
-                    '&copy; OpenStreetMap contributors'
-            }
-        ).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
 
-        L.marker([lat, lon])
-            .addTo(map)
-            .bindPopup("{{ $wisata['name'] }}")
-            .openPopup();
-    
-    });
+            L.marker([lat, lon])
+                .addTo(map)
+                .bindPopup("{{ $wisata['name'] }}")
+                .openPopup();
+        });
     </script>
 </body>
 </html>

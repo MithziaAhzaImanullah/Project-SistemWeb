@@ -20,7 +20,11 @@
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="/wisata-desain" class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition">Beranda</a>
                     <a href="/currency-desain" class="text-sm font-medium text-emerald-600 font-semibold transition">Konverter Kurs</a>
-                    <a href="#" class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition">Favorit Saya</a>
+                    @auth
+                        <a href="{{ route('dashboard') }}" class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition">
+                            Favorit Saya
+                        </a>
+                    @endauth
                     <div class="h-5 w-[1px] bg-slate-200"></div>
                     @auth
                         <a href="{{ route('dashboard') }}" class="text-sm font-medium text-slate-700 hover:text-emerald-600 transition">Dashboard</a>

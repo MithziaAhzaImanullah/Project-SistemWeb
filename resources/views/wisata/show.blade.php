@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Destinasi - Jelajah Indonesia</title>
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased">
@@ -67,20 +71,33 @@
             
             <div class="lg:col-span-2 space-y-6">
                 <div class="relative rounded-3xl overflow-hidden shadow-lg border border-slate-100 aspect-[16/9] bg-slate-200">
-                    <img src="https://images.unsplash.com/photo-1596402184320-417e7178b2cd?auto=format&fit=crop&w=1200&q=80" alt="Candi Borobudur" class="w-full h-full object-cover">
+                    <img
+                        src="{{ $wisata['image'] ?? 'https://via.placeholder.com/1200x700?text=No+Image' }}"
+                        alt="{{ $wisata['name'] ?? 'Destinasi Wisata' }}"
+                        class="w-full h-full object-cover">
                     <div class="absolute top-4 left-4">
-                        <span class="bg-emerald-600 text-white px-3 py-1 rounded-xl text-xs font-bold tracking-wide shadow-md">🏛️ Budaya & Sejarah</span>
+                        <span class="bg-emerald-600 text-white px-3 py-1 rounded-xl text-xs font-bold tracking-wide shadow-md">
+                            'kinds' => ucfirst(
+                                str_replace('_', ' ',
+                                    explode(',', $data['kinds'])[0] ?? 'Wisata'
+                                )
+                            ),
+                        </span>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <h1 class="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">Candi Borobudur</h1>
+                        <h1 class="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
+                            {{ $wisata['name'] ?? 'Destinasi Wisata' }}
+                        </h1>
                         <p class="text-slate-500 mt-2 flex items-center text-sm sm:text-base">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             </svg>
-                            Borobudur, Kec. Borobudur, Kabupaten Magelang, Jawa Tengah
+                            {{ $wisata['address'] ?? '-' }},
+                            {{ $wisata['city'] ?? '-' }},
+                            {{ $wisata['province'] ?? '-' }}
                         </p>
                     </div>
 
@@ -88,11 +105,11 @@
                     @auth
                         <form action="{{ route('favorite.store') }}" method="POST" class="shrink-0">
                             @csrf
-                            <input type="hidden" name="xid" value="borobudur_12345">
-                            <input type="hidden" name="name" value="Candi Borobudur">
-                            <input type="hidden" name="image" value="https://images.unsplash.com/photo-1596402184320-417e7178b2cd?auto=format&fit=crop&w=500&q=80">
-                            <input type="hidden" name="city" value="Magelang">
-                            <input type="hidden" name="province" value="Jawa Tengah">
+                            <input type="hidden" name="xid" value="{{ $wisata['xid'] ?? '' }}">
+                            <input type="hidden" name="name" value="{{ $wisata['name'] ?? '' }}">
+                            <input type="hidden" name="image" value="{{ $wisata['image'] ?? 'https://via.placeholder.com/500x300?text=No+Image' }}">
+                            <input type="hidden" name="city" value="{{ $wisata['city'] ?? '' }}">
+                            <input type="hidden" name="province" value="{{ $wisata['province'] ?? '' }}">
 
                             <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold px-5 py-3 rounded-xl border border-rose-200/60 transition shadow-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 fill-rose-600" viewBox="0 0 20 20" fill="currentColor">
@@ -111,10 +128,7 @@
                 <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 space-y-4">
                     <h2 class="text-xl font-bold text-slate-900 border-b border-slate-100 pb-3">Deskripsi Tempat</h2>
                     <p class="text-slate-600 leading-relaxed text-sm sm:text-base">
-                        Candi Borobudur adalah candi Buddha terbesar di dunia yang dibangun pada abad ke-8 masehi pada masa pemerintahan wangsa Syailendra. Monumen ini terdiri atas enam teras berbentuk bujur sangkar yang di atasnya terdapat tiga pelataran melingkar, pada dindingnya dihiasi dengan 2.672 panel relief dan aslinya terdapat 504 arca Buddha.
-                    </p>
-                    <p class="text-slate-600 leading-relaxed text-sm sm:text-base">
-                        Tempat ini merupakan mahakarya arsitektur kuno dan telah diakui sebagai salah satu Situs Warisan Dunia oleh UNESCO. Cocok dikunjungi bagi wisatawan yang menyukai sejarah, fotografi, keindahan arsitektur, dan pemandangan matahari terbit yang magis.
+                        {{ $wisata['description'] ?? 'Deskripsi tidak tersedia.' }}
                     </p>
                 </div>
             </div>
@@ -128,7 +142,10 @@
                         Peta Lokasi Interaktif
                     </h2>
                     
-                    <div id="map-placeholder" class="w-full h-64 bg-slate-100 border border-slate-200 rounded-2xl flex flex-col items-center justify-center text-center p-4 overflow-hidden relative">
+                    <div
+                        id="map"
+                        class="w-full h-64 rounded-2xl border border-slate-200">
+                    </div>
                         <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#059669_1px,transparent_1px)] [background-size:16px_16px]"></div>
                         
                         <div class="z-10 bg-emerald-600 text-white p-3 rounded-full shadow-lg shadow-emerald-600/30 mb-2 animate-bounce">
@@ -143,11 +160,11 @@
                     <div class="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-100 text-center text-xs text-slate-500">
                         <div>
                             <span class="block text-[10px] uppercase font-bold tracking-wider text-slate-400">Latitude</span>
-                            <span class="font-mono text-slate-700 font-medium">-7.6079</span>
+                            <span class="font-mono text-slate-700 font-medium">{{ $wisata['lat'] ?? '-' }}</span>
                         </div>
                         <div class="border-l border-slate-200">
                             <span class="block text-[10px] uppercase font-bold tracking-wider text-slate-400">Longitude</span>
-                            <span class="font-mono text-slate-700 font-medium">110.2038</span>
+                            <span class="font-mono text-slate-700 font-medium">{{ $wisata['lon'] ?? '-' }}</span>
                         </div>
                     </div>
                 </div>
@@ -166,6 +183,29 @@
 
         </div>
     </main>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const lat = {{ $wisata['lat'] ?? 0 }};
+        const lon = {{ $wisata['lon'] ?? 0 }};
+
+        const map = L.map('map').setView([lat, lon], 13);
+
+        L.tileLayer(
+            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            {
+                attribution:
+                    '&copy; OpenStreetMap contributors'
+            }
+        ).addTo(map);
+
+        L.marker([lat, lon])
+            .addTo(map)
+            .bindPopup("{{ $wisata['name'] }}")
+            .openPopup();
+    
+    });
+    </script>
 </body>
 </html>

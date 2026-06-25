@@ -15,27 +15,38 @@ class WisataController extends Controller
 
         if ($search) {
             // Langkah A: Dapatkan koordinat Lat & Lon dari nama daerah (Geocoding)
-            $geoResponse = Http::get("https://api.opentripmap.com/0.1/en/places/geoname", [
-                'name' => $search,
-                'apikey' => env('OPENTRIPMAP_API_KEY'),
-            ]);
+            $geoResponse = Http::withoutVerifying()->get(
+                "https://api.opentripmap.com/0.1/en/places/geoname",
+                [
+                    'name' => $search,
+                    'apikey' => env('OPENTRIPMAP_API_KEY'),
+                ]    
+            );
 
             if ($geoResponse->successful() && isset($geoResponse['lat'])) {
                 $lat = $geoResponse['lat'];
                 $lon = $geoResponse['lon'];
 
                 // Langkah B: Cari objek wisata di sekitar koordinat tersebut
-                $placesResponse = Http::get("https://api.opentripmap.com/0.1/en/places/radius", [
-                    'radius' => 5000, // radius 5km
-                    'lon' => $lon,
-                    'lat' => $lat,
-                    'rate' => '2',    // Filter objek populer yang memiliki dokumentasi/gambar
-                    'format' => 'json',
-                    'apikey' => env('OPENTRIPMAP_API_KEY'),
+                $placesResponse = Http::withoutVerifying()->get(
+                    "https://api.opentripmap.com/0.1/en/places/radius", 
+                    [
+                        'radius' => 50000,
+                        'lon' => $lon,
+                        'lat' => $lat,
+                        'rate' => '2',    // Filter objek populer yang memiliki dokumentasi/gambar
+                        'limit' => 30,
+                        'format' => 'json',
+                        'apikey' => env('OPENTRIPMAP_API_KEY'),
                 ]);
 
                 if ($placesResponse->successful()) {
-                    $places = $placesResponse->json();
+                    $places = collect($placesResponse->json())
+                        ->filter(function ($item) {
+                            return !empty($item['name']);
+                        })
+                        ->values()
+                        ->all();
                 }
             }
         }
@@ -54,9 +65,12 @@ class WisataController extends Controller
         }
 
         // 2. Tembak endpoint detail OpenTripMap menggunakan xid objek secara dinamis
-        $response = Http::get("https://api.opentripmap.com/0.1/en/places/xid/{$xid}", [
-            'apikey' => env('OPENTRIPMAP_API_KEY'),
-        ]);
+        $response = Http::withoutVerifying()->get(
+            "https://api.opentripmap.com/0.1/en/places/xid/{$xid}", 
+            [
+                'apikey' => env('OPENTRIPMAP_API_KEY'),
+            ]
+        );
 
         if ($response->failed()) {
             return redirect('/wisata-desain')->with('error', 'Gagal memuat detail destinasi wisata dari API.');
@@ -73,7 +87,10 @@ class WisataController extends Controller
             'address'     => $data['address']['road'] ?? ($data['address']['city'] ?? 'Lokasi tidak spesifik'),
             'city'        => $data['address']['city'] ?? ($data['address']['county'] ?? ''),
             'province'    => $data['address']['state'] ?? '',
-            'description' => $data['wikipedia_extracts']['text'] ?? 'Tidak ada deskripsi tambahan untuk objek wisata ini.',
+            'description' =>
+                $data['wikipedia_extracts']['text']
+                ?? $data['info']['descr']
+                ?? 'Tidak ada deskripsi tambahan untuk objek wisata ini.',
             'lat'         => $data['point']['lat'] ?? '0',
             'lon'         => $data['point']['lon'] ?? '0'
         ];

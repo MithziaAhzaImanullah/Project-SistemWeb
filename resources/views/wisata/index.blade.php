@@ -96,7 +96,7 @@
                         @endif
                         <div class="absolute top-3 left-3">
                             <span class="bg-slate-900/80 backdrop-blur-sm text-white px-2 py-0.5 rounded-lg text-[10px] font-medium tracking-wide">
-                                {{ current(explode(',', $item['kinds'])) }}
+                                {{ current(explode(',', $item['kinds'] ?? 'wisata')) }}
                             </span>
                         </div>
                     </div>
@@ -114,9 +114,12 @@
                         
                         {{-- Tombol Lihat Detail mengarah dinamis ke parameter ?xid=... --}}
                         <div class="pt-1">
-                            <a href="/wisata-detail-desain?xid={{ $item['xid'] }}" class="block text-center bg-slate-50 hover:bg-emerald-600 text-slate-700 hover:text-white font-semibold py-2.5 rounded-xl border border-slate-200 hover:border-emerald-600 text-xs transition shadow-sm">
+                        @if(!empty($item['xid']))
+                            <a href="/wisata-detail-desain?xid={{ $item['xid'] }}"
+                                class="block text-center bg-slate-50 hover:bg-emerald-600 text-slate-700 hover:text-white font-semibold py-2.5 rounded-xl border border-slate-200 hover:border-emerald-600 text-xs transition shadow-sm">
                                 Lihat Detail Wisata
                             </a>
+                        @endif
                         </div>
                     </div>
                 </div>

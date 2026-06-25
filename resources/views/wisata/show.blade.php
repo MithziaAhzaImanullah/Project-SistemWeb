@@ -78,16 +78,13 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             
             <div class="lg:col-span-2 space-y-6">
+
+                {{-- ✅ FIX 1: Badge kinds DIHAPUS dari sini --}}
                 <div class="relative rounded-3xl overflow-hidden shadow-lg border border-slate-100 aspect-[16/9] bg-slate-200">
                     <img
                         src="{{ $wisata['image'] ?? 'https://via.placeholder.com/1200x700?text=No+Image' }}"
                         alt="{{ $wisata['name'] ?? 'Destinasi Wisata' }}"
                         class="w-full h-full object-cover">
-                    <div class="absolute top-4 left-4">
-                        <span class="bg-emerald-600 text-white px-3 py-1 rounded-xl text-xs font-bold tracking-wide shadow-md">
-                            {{ $wisata['kinds'] }}
-                        </span>
-                    </div>
                 </div>
 
                 <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -127,13 +124,21 @@
                         class="relative z-0 w-full h-64 rounded-2xl border border-slate-200">
                     </div>
 
-                        <h3 class="font-bold text-lg">
+                    {{-- ✅ FIX 2: Tombol Google Maps dipindah ke sini, tepat di bawah peta --}}
+                    
+                        href="https://www.google.com/maps?q={{ $wisata['lat'] }},{{ $wisata['lon'] }}"
+                        target="_blank"
+                        class="block text-center bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl transition shadow-md"
+                    >
+                        📍 Buka di Google Maps
+                    </a>
+
+                    <h3 class="font-bold text-lg">
                         📍 Lokasi Wisata
-                        </h3>
-                        <p class="text-sm text-gray-500">
+                    </h3>
+                    <p class="text-sm text-gray-500">
                         Koordinat lokasi destinasi berdasarkan data OpenTripMap.
-                        </p>
-                    </div>
+                    </p>
 
                     <div class="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-100 text-center text-xs text-slate-500">
                         <div>
@@ -145,16 +150,29 @@
                             <span class="font-mono text-slate-700 font-medium">{{ $wisata['lon'] ?? '-' }}</span>
                         </div>
                     </div>
+
+                    {{-- ✅ FIX 3: Tombol Simpan ke Favorit --}}
+                    @auth
+                        <form action="{{ route('favorite.store') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="xid"      value="{{ $wisata['xid'] }}">
+                            <input type="hidden" name="name"     value="{{ $wisata['name'] }}">
+                            <input type="hidden" name="image"    value="{{ $wisata['image'] }}">
+                            <input type="hidden" name="city"     value="{{ $wisata['city'] }}">
+                            <input type="hidden" name="province" value="{{ $wisata['province'] }}">
+                            <button type="submit"
+                                class="w-full block text-center bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3 rounded-xl transition shadow-md">
+                                ❤️ Simpan ke Favorit
+                            </button>
+                        </form>
+                    @else
+                        <a href="/login"
+                            class="block text-center bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold py-3 rounded-xl transition text-sm">
+                            🔒 Masuk untuk menyimpan favorit
+                        </a>
+                    @endauth
                 </div>
 
-                <a
-                    href="https://www.google.com/maps?q={{ $wisata['lat'] }},{{ $wisata['lon'] }}"
-                    target="_blank"
-                    class="block mt-4 text-center bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl transition shadow-md"
-                >
-                    📍 Buka di Google Maps
-                </a>
-                
                 <div class="bg-gradient-to-br from-slate-900 to-emerald-950 rounded-3xl p-6 shadow-md border border-slate-800 space-y-4">
                     <h3 class="font-bold text-emerald-400 uppercase tracking-wider text-[11px]">💡 Tips Perjalanan</h3>
                     <h2 class="text-xl font-extrabold tracking-tight leading-snug text-white">Datang dari Luar Negeri?</h2>

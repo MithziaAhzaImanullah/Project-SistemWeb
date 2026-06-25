@@ -20,7 +20,9 @@
                 <div class="flex items-center space-x-6">
                     <a href="/wisata-desain" class="text-sm font-medium text-emerald-600 transition">Beranda</a>
                     <a href="/currency-desain" class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition">Konverter Kurs</a>
+                    @auth
                     <a href="/dashboard" class="text-sm font-medium text-slate-600 hover:text-emerald-600 transition">Favorit Saya</a>
+                    @endauth
                     <div class="h-5 w-[1px] bg-slate-200"></div>
                     @auth
                         <div class="flex items-center space-x-3">

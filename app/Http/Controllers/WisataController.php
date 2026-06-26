@@ -7,55 +7,66 @@ use Illuminate\Support\Facades\Http;
 
 class WisataController extends Controller
 {
-    // ── Helper: Terjemahkan teks ke Bahasa Indonesia via MyMemory API ──
+    // ── Helper: Terjemahkan teks ke Bahasa Indonesia (max 500 char per request) ──
     private function terjemahkan(string $teks, string $dariLang = 'en'): string
     {
-        // Jika teks kosong atau terlalu pendek, tidak perlu diterjemahkan
         if (empty(trim($teks)) || mb_strlen($teks) < 10) {
             return $teks;
         }
 
-        // Potong teks jika terlalu panjang (MyMemory gratis max ~500 kata)
-        $teks = mb_substr($teks, 0, 1500);
+        // Pecah teks menjadi potongan max 450 karakter per bagian (batas aman MyMemory)
+        $potongan = [];
+        $kalimat  = preg_split('/(?<=[.!?])\s+/', $teks);
+        $buffer   = '';
 
-        try {
-            $response = Http::withoutVerifying()
-                ->timeout(5)
-                ->get('https://api.mymemory.translated.net/get', [
-                    'q'        => $teks,
-                    'langpair' => "{$dariLang}|id",
-                ]);
-
-            if ($response->successful()) {
-                $data = $response->json();
-                $hasil = $data['responseData']['translatedText'] ?? null;
-
-                // MyMemory kadang mengembalikan error sebagai teks — cek dulu
-                if ($hasil && !str_starts_with(strtoupper($hasil), 'MYMEMORY WARNING')) {
-                    return $hasil;
-                }
+        foreach ($kalimat as $k) {
+            if (mb_strlen($buffer) + mb_strlen($k) + 1 <= 450) {
+                $buffer .= ($buffer ? ' ' : '') . $k;
+            } else {
+                if ($buffer !== '') $potongan[] = $buffer;
+                $buffer = mb_substr($k, 0, 450); // potong paksa jika 1 kalimat > 450
             }
-        } catch (\Exception $e) {
-            // Jika API terjemahan gagal, kembalikan teks asli saja
+        }
+        if ($buffer !== '') $potongan[] = $buffer;
+
+        $hasil = [];
+        foreach ($potongan as $bagian) {
+            try {
+                $response = Http::withoutVerifying()
+                    ->timeout(6)
+                    ->get('https://api.mymemory.translated.net/get', [
+                        'q'        => $bagian,
+                        'langpair' => "{$dariLang}|id",
+                    ]);
+
+                if ($response->successful()) {
+                    $data        = $response->json();
+                    $terjemahan  = $data['responseData']['translatedText'] ?? null;
+
+                    if ($terjemahan && !str_starts_with(strtoupper($terjemahan), 'MYMEMORY WARNING')) {
+                        $hasil[] = $terjemahan;
+                        continue;
+                    }
+                }
+            } catch (\Exception $e) {
+                // jika gagal, pakai teks asli bagian ini
+            }
+            $hasil[] = $bagian;
         }
 
-        return $teks;
+        return implode(' ', $hasil);
     }
 
-    // ── Helper: Deteksi bahasa teks (sederhana berdasarkan karakter) ──
+    // ── Helper: Deteksi bahasa teks ──
     private function deteksiBahasa(string $teks): string
     {
-        // Deteksi karakter Arab
         if (preg_match('/[\x{0600}-\x{06FF}]/u', $teks)) return 'ar';
-        // Deteksi karakter Jepang/China/Korea
         if (preg_match('/[\x{3000}-\x{9FFF}]/u', $teks)) return 'ja';
-        // Deteksi karakter Cyrillic (Rusia, dll)
         if (preg_match('/[\x{0400}-\x{04FF}]/u', $teks)) return 'ru';
-        // Default anggap bahasa Inggris
         return 'en';
     }
 
-    // ── Helper: Ambil gambar dari Wikipedia berdasarkan nama tempat ──
+    // ── Helper: Ambil gambar dari Wikipedia ──
     private function ambilGambarWikipedia(string $namaTempat): ?string
     {
         try {
@@ -74,14 +85,12 @@ class WisataController extends Controller
                 $page  = reset($pages);
                 return $page['thumbnail']['source'] ?? null;
             }
-        } catch (\Exception $e) {
-            // Gagal ambil gambar Wikipedia, lanjut ke fallback
-        }
+        } catch (\Exception $e) {}
 
         return null;
     }
 
-    // ── 1. Daftar tempat wisata berdasarkan nama daerah ──
+    // ── 1. Daftar tempat wisata ──
     public function index(Request $request)
     {
         $search = $request->query('search');
@@ -119,7 +128,6 @@ class WisataController extends Controller
                         ->values()
                         ->all();
 
-                    // ── Tambahkan gambar Wikipedia jika API tidak punya gambar ──
                     foreach ($rawPlaces as &$item) {
                         if (empty($item['preview']['source'])) {
                             $gambar = $this->ambilGambarWikipedia($item['name']);
@@ -138,7 +146,7 @@ class WisataController extends Controller
         return view('wisata.index', compact('places', 'search'));
     }
 
-    // ── 2. Detail objek wisata berdasarkan XID ──
+    // ── 2. Detail wisata ──
     public function show(Request $request)
     {
         $xid = $request->query('xid');
@@ -158,13 +166,11 @@ class WisataController extends Controller
 
         $data = $response->json();
 
-        // ── Ambil deskripsi mentah ──
         $deskripsiMentah =
             $data['wikipedia_extracts']['text']
             ?? $data['info']['descr']
             ?? '';
 
-        // ── Terjemahkan deskripsi ke Bahasa Indonesia ──
         if (!empty($deskripsiMentah)) {
             $bahasaAsal  = $this->deteksiBahasa($deskripsiMentah);
             $deskripsiId = $this->terjemahkan($deskripsiMentah, $bahasaAsal);
@@ -172,7 +178,6 @@ class WisataController extends Controller
             $deskripsiId = 'Tidak ada deskripsi tambahan untuk objek wisata ini.';
         }
 
-        // ── Ambil gambar: utamakan dari API, fallback ke Wikipedia ──
         $gambar = $data['preview']['source'] ?? null;
         if (!$gambar) {
             $gambar = $this->ambilGambarWikipedia($data['name'] ?? '');

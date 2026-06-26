@@ -6,6 +6,7 @@
     <title>Cari Destinasi - Jelajah Indonesia</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased">
 
     <nav class="sticky top-0 z-50 bg-white border-b border-slate-100 shadow-sm">
@@ -25,11 +26,53 @@
                     @endauth
                     <div class="h-5 w-[1px] bg-slate-200"></div>
                     @auth
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-md">
-                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        {{-- Dropdown Profil --}}
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" class="flex items-center space-x-2 focus:outline-none group">
+                                <div class="w-8 h-8 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-md">
+                                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                </div>
+                                <span class="text-sm font-bold text-slate-700 group-hover:text-emerald-600 transition">{{ Auth::user()->name }}</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            <div x-show="open" @click.outside="open = false" x-transition
+                                class="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50">
+                                
+                                <div class="px-4 py-3 border-b border-slate-100">
+                                    <p class="text-xs text-slate-400">Masuk sebagai</p>
+                                    <p class="text-sm font-bold text-slate-800 truncate">{{ Auth::user()->name }}</p>
+                                    <p class="text-xs text-slate-400 truncate">{{ Auth::user()->email }}</p>
+                                </div>
+
+                                <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
+                                    Favorit Saya
+                                </a>
+
+                                <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    Edit Profil
+                                </a>
+
+                                <div class="border-t border-slate-100 mt-1 pt-1">
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-rose-500 hover:bg-rose-50 transition">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                            </svg>
+                                            Keluar
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
-                            <span class="text-sm font-bold text-slate-700">{{ Auth::user()->name }}</span>
                         </div>
                     @else
                         <a href="/login" class="text-sm font-medium text-slate-700 hover:text-emerald-600 transition">Masuk</a>
@@ -90,14 +133,15 @@
                         @if(!empty($item['preview']['source']))
                             <img src="{{ $item['preview']['source'] }}" alt="{{ $item['name'] }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                         @else
-                            {{-- Fallback: gambar dinamis Unsplash berdasarkan nama wisata --}}
                             <img
                                 src="https://source.unsplash.com/400x250/?{{ urlencode($item['name'] . ' tourism Indonesia') }}"
                                 alt="{{ $item['name'] }}"
                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                                onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'text-center p-4 space-y-2 select-none\'><span class=\'text-3xl block\'>🌴</span><span class=\'text-[10px] uppercase font-bold tracking-wider text-slate-400\'>Wisata Indonesia</span></div>'"
+                                onerror="this.style.display='none'; this.parentElement.querySelector('.fallback-icon').style.display='flex';""
                             >
-                        @endif
+                            <div class="fallback-icon text-center p-4 space-y-2 select-none hidden absolute inset-0 items-center justify-center">
+                                <span class="text-3xl block">🌴</span>
+                                <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 bg-slate-50 px-2 py-0.5 rounded-md">Wisata Indonesia</span>
                             </div>
                         @endif
                         <div class="absolute top-3 left-3">

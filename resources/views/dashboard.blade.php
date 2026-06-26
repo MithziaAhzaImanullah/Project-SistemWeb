@@ -75,13 +75,18 @@
                         <div class="group bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col justify-between">
                             <div class="relative overflow-hidden aspect-[16/10]">
                                 @if($item->image)
-                                    <img src="{{ $item->image }}" alt="{{ $item->name }}" class="w-full h-full object-cover">
-                                @else
-                                    <div class="w-full h-full flex flex-col items-center justify-center bg-slate-100">
-                                        <span class="text-3xl">🌴</span>
-                                        <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 mt-1">Wisata Indonesia</span>
-                                    </div>
+                                    <img 
+                                        src="{{ $item->image }}" 
+                                        alt="{{ $item->name }}" 
+                                        class="w-full h-full object-cover"
+                                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                    >
                                 @endif
+                                <div class="w-full h-full flex-col items-center justify-center bg-slate-100 {{ $item->image ? 'hidden' : 'flex' }}"
+                                    style="{{ $item->image ? 'display:none;' : 'display:flex;' }}">
+                                    <span class="text-3xl">🌴</span>
+                                    <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 mt-1">Wisata Indonesia</span>
+                                </div>
                             </div>
                             <div class="p-5 space-y-4">
                                 <div>

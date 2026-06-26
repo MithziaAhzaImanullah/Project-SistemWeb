@@ -21,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        \Illuminate\Support\Facades\Http::withoutVerifying();
+        if (config('app.env') === 'production') {
+            \Illuminate\Support\Facades\Http::withoutVerifying();
+        }
     }
 }

@@ -47,7 +47,7 @@ RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available
 
 # Buat .env dari .env.example
 RUN cp .env.example .env \
-     && sed -i 's|APP_URL=http://localhost|APP_URL=https://project-sistemweb-1.onrender.com|g' .env
+     && sed -i 's|APP_URL=http://localhost|APP_URL=https://jelajah-indonesia.onrender.com|g' .env
 
 # Script start
 CMD php artisan key:generate --force \

@@ -1,4 +1,4 @@
-FROM php:8.3-apache
+FROM php:8.4-apache
 
 # Install dependencies sistem
 RUN apt-get update && apt-get install -y \
@@ -47,7 +47,7 @@ RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available
 # Buat .env dari .env.example
 RUN cp .env.example .env
 
-# Script start: generate key, migrate, lalu jalankan Apache
+# Script start
 CMD php artisan key:generate --force \
     && php artisan migrate --force \
     && php artisan storage:link \

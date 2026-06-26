@@ -29,7 +29,7 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Install Node dependencies dan build Vite assets
-RUN npm install && npm run build
+RUN npm install && npm run build && ls -la public/build/
 
 # Buat file SQLite database
 RUN mkdir -p /var/data \

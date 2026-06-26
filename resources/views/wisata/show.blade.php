@@ -165,13 +165,13 @@
                     @auth
                         <form action="{{ route('favorite.store') }}" method="POST">
                             @csrf
-                            <input type="hidden" name="xid"      value="{{ $wisata['xid'] }}">
-                            <input type="hidden" name="name"     value="{{ $wisata['name'] }}">
-                            <input type="hidden" name="image"    value="{{ $wisata['image'] }}">
-                            <input type="hidden" name="city"     value="{{ $wisata['city'] }}">
-                            <input type="hidden" name="province" value="{{ $wisata['province'] }}">
+                            <input type="hidden" name="xid"      value="{{ $wisata['xid'] ?? '' }}">
+                            <input type="hidden" name="name"     value="{{ $wisata['name'] ?? '' }}">
+                            <input type="hidden" name="image"    value="{{ $wisata['image'] ?? '' }}">
+                            <input type="hidden" name="city"     value="{{ $wisata['city'] ?? '' }}">
+                            <input type="hidden" name="province" value="{{ $wisata['province'] ?? '' }}">
                             <button type="submit"
-                                class="w-full text-center bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3 rounded-xl transition shadow-md">
+                                class="w-full block text-center bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3 rounded-xl transition shadow-md">
                                 ❤️ Simpan ke Favorit
                             </button>
                         </form>

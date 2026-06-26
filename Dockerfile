@@ -34,6 +34,7 @@ RUN npm install && npm run build && ls -la public/build/
 # Buat file SQLite database
 RUN mkdir -p /var/data \
     && touch /var/data/database.sqlite \
+    && chown -R www-data:www-data /var/data \
     && chmod -R 775 /var/data
 
 # Set permission storage dan cache

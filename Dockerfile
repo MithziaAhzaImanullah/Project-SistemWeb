@@ -50,7 +50,7 @@ RUN cp .env.example .env \
 
 # Script start
 CMD php artisan key:generate --force \
-    && php artisan migrate --force \
+    && php artisan migrate:fresh --force \
     && php artisan storage:link \
     && php artisan config:cache \
     && php artisan route:cache \

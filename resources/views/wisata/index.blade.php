@@ -132,14 +132,8 @@
                     <div class="relative overflow-hidden aspect-[16/10] bg-slate-100 flex items-center justify-center">
                         @if(!empty($item['preview']['source']))
                             <img src="{{ $item['preview']['source'] }}" alt="{{ $item['name'] }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                        @else
-                            <img
-                                src="https://source.unsplash.com/400x250/?{{ urlencode($item['name'] . ' tourism Indonesia') }}"
-                                alt="{{ $item['name'] }}"
-                                class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                                onerror="this.style.display='none'; this.parentElement.querySelector('.fallback-icon').style.display='flex';""
-                            >
-                            <div class="fallback-icon text-center p-4 space-y-2 select-none hidden absolute inset-0 items-center justify-center">
+                         @else
+                            <div class="text-center p-4 space-y-2 select-none">
                                 <span class="text-3xl block">🌴</span>
                                 <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 bg-slate-50 px-2 py-0.5 rounded-md">Wisata Indonesia</span>
                             </div>

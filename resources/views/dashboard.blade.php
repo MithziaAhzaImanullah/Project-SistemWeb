@@ -74,7 +74,14 @@
                     @forelse($favorites as $item)
                         <div class="group bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col justify-between">
                             <div class="relative overflow-hidden aspect-[16/10]">
-                                <img src="{{ $item->image ?? 'https://images.unsplash.com/photo-1596402184320-417e7178b2cd?auto=format&fit=crop&w=500&q=80' }}" alt="{{ $item->name }}" class="w-full h-full object-cover">
+                                @if($item->image)
+                                    <img src="{{ $item->image }}" alt="{{ $item->name }}" class="w-full h-full object-cover">
+                                @else
+                                    <div class="w-full h-full flex flex-col items-center justify-center bg-slate-100">
+                                        <span class="text-3xl">🌴</span>
+                                        <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 mt-1">Wisata Indonesia</span>
+                                    </div>
+                                @endif
                             </div>
                             <div class="p-5 space-y-4">
                                 <div>

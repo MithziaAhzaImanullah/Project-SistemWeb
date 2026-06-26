@@ -90,10 +90,14 @@
                         @if(!empty($item['preview']['source']))
                             <img src="{{ $item['preview']['source'] }}" alt="{{ $item['name'] }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                         @else
-                            {{-- Jika tempat lokal kecil tidak punya gambar bawaan dari API --}}
-                            <div class="text-center p-4 space-y-2 select-none">
-                                <span class="text-3xl block">🌴</span>
-                                <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 bg-slate-50 px-2 py-0.5 rounded-md">OpenTripMap</span>
+                            {{-- Fallback: gambar dinamis Unsplash berdasarkan nama wisata --}}
+                            <img
+                                src="https://source.unsplash.com/400x250/?{{ urlencode($item['name'] . ' tourism Indonesia') }}"
+                                alt="{{ $item['name'] }}"
+                                class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                                onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'text-center p-4 space-y-2 select-none\'><span class=\'text-3xl block\'>🌴</span><span class=\'text-[10px] uppercase font-bold tracking-wider text-slate-400\'>Wisata Indonesia</span></div>'"
+                            >
+                        @endif
                             </div>
                         @endif
                         <div class="absolute top-3 left-3">
